@@ -19,16 +19,20 @@
         :max-zoom="2"
         :default-viewport="{ zoom: 1 }"
         :connection-radius="30"
-        :connection-line-type="ConnectionLineType.SmoothStep"
+        :connection-line-type="ConnectionLineType.Straight"
         :pan-on-drag="true"
       >
         <Background pattern-color="#aaa" :gap="8" />
-        <template #node-custom="props">
-          <CustomNode v-bind="props" @updateData="handleUpdateData" />
+        <template #node-entity="props">
+          <EntityNode v-bind="props" @updateData="handleUpdateData" />
         </template>
 
         <template #node-attribute="props">
           <AttributeNode v-bind="props" />
+        </template>
+
+        <template #node-relationship="props">
+          <RelationshipNode v-bind="props" />
         </template>
 
         <template #edge-custom="props">
@@ -43,50 +47,73 @@
 import { ref, onMounted } from 'vue'
 import { ConnectionLineType, useVueFlow, VueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
-import CustomNode from './CustomNode.vue'
+import CustomNode from './EntityNode.vue'
 import CustomEdge from './CustomEdge.vue'
 import AttributeNode from './AttributeNode.vue'
+import RelationshipNode from './RelationshipNode.vue'
+import EntityNode from './EntityNode.vue'
 
 const { onConnect, getSelectedNodes, getSelectedEdges, setNodes, setEdges } = useVueFlow()
 
 const nodes = ref([
-  { id: '1', position: { x: 100, y: 100 }, type: 'custom', data: { label: 'Entity 1' } },
-  { id: '2', position: { x: 300, y: 100 }, type: 'custom', data: { label: 'Entity 2' } },
-  { id: 'a1', position: { x: 100, y: 250 }, type: 'attribute', data: { label: 'Attribute A' } },
-  { id: 'a2', position: { x: 300, y: 250 }, type: 'attribute', data: { label: 'Attribute B' } },
+  { id: 'student', position: { x: 100, y: 200 }, type: 'entity', data: { label: 'Student' } },
+  { id: 'studentName', position: { x: 10, y: 200 }, type: 'attribute', data: { label: 'Name' } },
+
+  { id: 'course', position: { x: 500, y: 200 }, type: 'entity', data: { label: 'Course' } },
+  { id: 'courseName', position: { x: 600, y: 200 }, type: 'attribute', data: { label: 'Title' } },
+
+  { id: 'enrolls', position: { x: 300, y: 300 }, type: 'relationship', data: { label: 'Enrolls' } },
+  { id: 'grade', position: { x: 300, y: 400 }, type: 'attribute', data: { label: 'Grade' } },
 ])
 
 const edges = ref([
+  // Entity → Relationship (bottom to top)
   {
-    id: 'e1-2',
-    source: '1',
-    target: '2',
+    id: 'e-student-enrolls',
+    source: 'student',
+    target: 'enrolls',
     type: 'custom',
-    style: { stroke: '#123E6B' },
+    sourceHandle: 'bottom',
+    targetHandle: 'left',
+  },
+  {
+    id: 'e-course-enrolls',
+    source: 'course',
+    target: 'enrolls',
+    type: 'custom',
+    sourceHandle: 'bottom',
+    targetHandle: 'right',
+  },
+
+  // Attributes → Entity (right to left, and left to right)
+  {
+    id: 'e-studentName',
+    source: 'student',
+    target: 'studentName',
+    type: 'custom',
+    sourceHandle: 'left',
+    targetHandle: 'right',
+  },
+  {
+    id: 'e-courseName',
+    source: 'course',
+    target: 'courseName',
+    type: 'custom',
     sourceHandle: 'right',
     targetHandle: 'left',
   },
+
+  // Attribute → Relationship (bottom to top)
   {
-    id: 'e1-a1',
-    source: '1',
-    target: 'a1',
+    id: 'e-grade',
+    source: 'enrolls',
+    target: 'grade',
     type: 'custom',
-    style: { stroke: '#0b6e4f' },
     sourceHandle: 'bottom',
-    targetHandle: 'left',
-  },
-  {
-    id: 'e2-a2',
-    source: '2',
-    target: 'a2',
-    type: 'custom',
-    style: { stroke: '#0b6e4f' },
-    sourceHandle: 'bottom',
-    targetHandle: 'left',
+    targetHandle: 'top',
   },
 ])
 
-// Add a new static node (will show as an alert)
 const handleAddNode = () => {
   //
 }

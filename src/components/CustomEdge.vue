@@ -29,7 +29,6 @@ const path = computed(() =>
       class="nodrag nopan"
     >
       <span>{{ props.data.relationship }}</span>
-      <!-- Show relationship type -->
     </div>
   </EdgeLabelRenderer>
 </template>
