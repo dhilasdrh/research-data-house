@@ -13,4 +13,5 @@ CodeMirror
 
 VueFlow
 
-<img width="auto" height="300" alt="image" src="https://github.com/user-attachments/assets/5fbf9600-4f58-46e5-bd8f-582d9403a0c5" />
+<img width="1460" height="866" alt="image" src="https://github.com/user-attachments/assets/489d789d-6b41-4bad-9de0-59e04d9233f7" />
+
