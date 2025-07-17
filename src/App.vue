@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import SampleCodeMirror from './components/SampleCodeMirror.vue'
-import SampleERD from './components/SampleERD.vue'
+import SampleERD2 from './components/SampleERD2.vue'
 import SampleMonacoEditor from './components/SampleMonacoEditor.vue'
 
 const activeView = ref<'monaco' | 'codemirror' | 'erd'>('monaco')
@@ -33,6 +33,6 @@ const activeView = ref<'monaco' | 'codemirror' | 'erd'>('monaco')
 
     <SampleMonacoEditor v-if="activeView === 'monaco'" />
     <SampleCodeMirror v-if="activeView === 'codemirror'" />
-    <SampleERD v-if="activeView === 'erd'" />
+    <SampleERD2 v-if="activeView === 'erd'" />
   </div>
 </template>

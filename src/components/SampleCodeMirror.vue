@@ -93,7 +93,7 @@ const extensions = computed(() => [
     <Codemirror
       v-model="code"
       :extensions="extensions"
-      placeholder="Write SQL..."
+      placeholder="..."
       autofocus
       :indent-with-tab="true"
       :tab-size="2"

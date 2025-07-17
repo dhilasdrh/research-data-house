@@ -27,6 +27,10 @@
           <EntityNode v-bind="props" @updateData="handleUpdateData" />
         </template>
 
+        <template #node-table="props">
+          <TableNode v-bind="props" />
+        </template>
+
         <template #node-attribute="props">
           <AttributeNode v-bind="props" />
         </template>
@@ -52,6 +56,7 @@ import CustomEdge from './CustomEdge.vue'
 import AttributeNode from './AttributeNode.vue'
 import RelationshipNode from './RelationshipNode.vue'
 import EntityNode from './EntityNode.vue'
+import TableNode from './TableNode.vue'
 
 const { onConnect, getSelectedNodes, getSelectedEdges, setNodes, setEdges } = useVueFlow()
 
@@ -114,8 +119,27 @@ const edges = ref([
   },
 ])
 
+let tableCount = 1
+
 const handleAddNode = () => {
-  //
+  const newNode = {
+    id: `table-${Date.now()}`,
+    type: 'table',
+    position: {
+      x: 100 + Math.random() * 300,
+      y: 100 + Math.random() * 300,
+    },
+    data: {
+      name: `NewTable${tableCount}`,
+      columns: [
+        { name: 'id', type: 'INT', isPrimary: true },
+        { name: 'created_at', type: 'TIMESTAMP' },
+      ],
+    },
+  }
+
+  nodes.value.push(newNode)
+  tableCount++
 }
 
 const handleUpdateData = (nodeId, newLabel) => {
