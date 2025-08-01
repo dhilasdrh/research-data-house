@@ -1,121 +1,106 @@
 <template>
-  <main id="app">
-    <div class="h-screen w-screen p-2">
-      <div class="space-x-2">
-        <!-- <button
-          class="border-2 bg-gray-100 py-2 px-3 rounded-lg text-sm"
-          type="button"
-          @click="handleAddNode"
-        >
-          Add node
-        </button> -->
-      </div>
-
-      <VueFlow
-        :nodes="nodes"
-        :edges="edges"
-        :fit-view-on-init="true"
-        :min-zoom="0.2"
-        :max-zoom="2"
-        :default-viewport="{ zoom: 1 }"
-        :connection-radius="30"
-        :connection-line-type="ConnectionLineType.Straight"
-        :pan-on-drag="true"
+  <div class="h-screen w-[1000px] p-2">
+    <div class="space-x-2">
+      <button
+        class="border-2 bg-gray-100 py-2 px-3 rounded-lg text-sm"
+        type="button"
+        @click="handleAddNode"
       >
-        <Background pattern-color="#aaa" :gap="8" />
-        <template #node-entity="props">
-          <EntityNode v-bind="props" @updateData="handleUpdateData" />
-        </template>
-
-        <template #node-table="props">
-          <TableNode v-bind="props" />
-        </template>
-
-        <template #node-attribute="props">
-          <AttributeNode v-bind="props" />
-        </template>
-
-        <template #node-relationship="props">
-          <RelationshipNode v-bind="props" />
-        </template>
-
-        <template #edge-custom="props">
-          <CustomEdge v-bind="props" />
-        </template>
-      </VueFlow>
+        Add Table
+      </button>
     </div>
-  </main>
+
+    <VueFlow
+      :nodes="nodes"
+      :edges="edges"
+      :fit-view-on-init="true"
+      :min-zoom="0.2"
+      :max-zoom="2"
+      :default-viewport="{ zoom: 1 }"
+      :connection-radius="30"
+      :connection-line-type="ConnectionLineType.SmoothStep"
+      :pan-on-drag="true"
+    >
+      <Background pattern-color="#aaa" :gap="8" />
+      <template #node-table="props">
+        <TableNode v-bind="props" />
+      </template>
+      <template #edge-custom="props">
+        <CustomEdge v-bind="props" />
+      </template>
+    </VueFlow>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ConnectionLineType, useVueFlow, VueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
-import CustomNode from './EntityNode.vue'
+
 import CustomEdge from './CustomEdge.vue'
-import AttributeNode from './AttributeNode.vue'
-import RelationshipNode from './RelationshipNode.vue'
-import EntityNode from './EntityNode.vue'
 import TableNode from './TableNode.vue'
 
-const { onConnect, getSelectedNodes, getSelectedEdges, setNodes, setEdges } = useVueFlow()
+const { onConnect, getSelectedNodes, getSelectedEdges } = useVueFlow()
 
 const nodes = ref([
-  { id: 'student', position: { x: 100, y: 200 }, type: 'entity', data: { label: 'Student' } },
-  { id: 'studentName', position: { x: 10, y: 200 }, type: 'attribute', data: { label: 'Name' } },
-
-  { id: 'course', position: { x: 500, y: 200 }, type: 'entity', data: { label: 'Course' } },
-  { id: 'courseName', position: { x: 600, y: 200 }, type: 'attribute', data: { label: 'Title' } },
-
-  { id: 'enrolls', position: { x: 300, y: 300 }, type: 'relationship', data: { label: 'Enrolls' } },
-  { id: 'grade', position: { x: 300, y: 400 }, type: 'attribute', data: { label: 'Grade' } },
+  {
+    id: 'students',
+    type: 'table',
+    position: { x: 100, y: 200 },
+    data: {
+      name: 'students',
+      columns: [
+        { name: 'id', type: 'INT', isPrimary: true },
+        { name: 'name', type: 'VARCHAR(100)' },
+        { name: 'email', type: 'VARCHAR(100)' },
+      ],
+    },
+  },
+  {
+    id: 'courses',
+    type: 'table',
+    position: { x: 500, y: 200 },
+    data: {
+      name: 'courses',
+      columns: [
+        { name: 'id', type: 'INT', isPrimary: true },
+        { name: 'title', type: 'VARCHAR(255)' },
+      ],
+    },
+  },
+  {
+    id: 'enrollments',
+    type: 'table',
+    position: { x: 300, y: 350 },
+    data: {
+      name: 'enrollments',
+      columns: [
+        { name: 'student_id', type: 'INT', isPrimary: true },
+        { name: 'course_id', type: 'INT', isPrimary: true },
+        { name: 'enrolled_at', type: 'DATE' },
+      ],
+    },
+  },
 ])
 
 const edges = ref([
-  // Entity → Relationship (bottom to top)
   {
-    id: 'e-student-enrolls',
-    source: 'student',
-    target: 'enrolls',
+    id: 'e-enrollment-student',
+    source: 'students',
+    target: 'enrollments',
     type: 'custom',
-    sourceHandle: 'bottom',
-    targetHandle: 'left',
+    sourceHandle: 'source-right', // student exports from right
+    targetHandle: 'target-left', // enrollment receives from left
+    data: { relationship: '1:N' },
   },
   {
-    id: 'e-course-enrolls',
-    source: 'course',
-    target: 'enrolls',
+    id: 'e-enrollment-course',
+    source: 'courses',
+    target: 'enrollments',
     type: 'custom',
-    sourceHandle: 'bottom',
-    targetHandle: 'right',
-  },
-
-  // Attributes → Entity (right to left, and left to right)
-  {
-    id: 'e-studentName',
-    source: 'student',
-    target: 'studentName',
-    type: 'custom',
-    sourceHandle: 'left',
-    targetHandle: 'right',
-  },
-  {
-    id: 'e-courseName',
-    source: 'course',
-    target: 'courseName',
-    type: 'custom',
-    sourceHandle: 'right',
-    targetHandle: 'left',
-  },
-
-  // Attribute → Relationship (bottom to top)
-  {
-    id: 'e-grade',
-    source: 'enrolls',
-    target: 'grade',
-    type: 'custom',
-    sourceHandle: 'bottom',
-    targetHandle: 'top',
+    sourceHandle: 'source-left', // course exports from left
+    targetHandle: 'target-right', // enrollment receives from right
+    data: { relationship: '1:N' },
   },
 ])
 
@@ -130,7 +115,7 @@ const handleAddNode = () => {
       y: 100 + Math.random() * 300,
     },
     data: {
-      name: `NewTable${tableCount}`,
+      name: `new_table_${tableCount}`,
       columns: [
         { name: 'id', type: 'INT', isPrimary: true },
         { name: 'created_at', type: 'TIMESTAMP' },
@@ -142,43 +127,28 @@ const handleAddNode = () => {
   tableCount++
 }
 
-const handleUpdateData = (nodeId, newLabel) => {
-  const node = nodes.value.find((n) => n.id === nodeId)
-  if (node) {
-    node.data.label = newLabel
-  }
-}
-
 const handleRemoveNode = (nodeId) => {
   const nodeIndex = nodes.value.findIndex((node) => node.id === nodeId)
-  if (nodeIndex !== -1) {
-    nodes.value.splice(nodeIndex, 1)
-  }
+  if (nodeIndex !== -1) nodes.value.splice(nodeIndex, 1)
 }
 
 const handleRemoveEdge = (edgeId) => {
   const edgeIndex = edges.value.findIndex((edge) => edge.id === edgeId)
-  if (edgeIndex !== -1) {
-    edges.value.splice(edgeIndex, 1)
-  }
+  if (edgeIndex !== -1) edges.value.splice(edgeIndex, 1)
 }
 
 const handleKeydown = (event) => {
   if (event.key === 'Delete' || event.key === 'Backspace') {
     const selectedNodes = getSelectedNodes.value
     const selectedEdges = getSelectedEdges.value
-    if (selectedNodes.length > 0) {
-      handleRemoveNode(selectedNodes[0].id)
-    }
-    if (selectedEdges.length > 0) {
-      handleRemoveEdge(selectedEdges[0].id)
-    }
+    if (selectedNodes.length > 0) handleRemoveNode(selectedNodes[0].id)
+    if (selectedEdges.length > 0) handleRemoveEdge(selectedEdges[0].id)
   }
 }
 
-onConnect((connection) => {
+onConnect((connection, edge) => {
   const newEdge = {
-    id: Date.now().toString(),
+    id: `edge-${Date.now()}`,
     source: connection.source,
     target: connection.target,
     type: 'custom',

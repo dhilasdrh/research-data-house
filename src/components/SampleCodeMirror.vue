@@ -91,6 +91,7 @@ const extensions = computed(() => [
       <label><input type="radio" value="light" v-model="theme" /> Light</label>
     </div>
     <Codemirror
+      :class="['cm-editor-wrapper', theme]"
       v-model="code"
       :extensions="extensions"
       placeholder="..."

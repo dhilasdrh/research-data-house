@@ -32,7 +32,7 @@ const path = computed(() =>
         position: 'absolute',
         transform: `translate(-50%, -50%) translate(${path[1]}px,${path[2]}px)`,
       }"
-      class="nodrag nopan bg-white text-xs px-1 border rounded"
+      class="nodrag nopan bg-white dark:text-gray-400 py-1 text-xs px-1 border rounded"
     >
       {{ props.data.relationship }}
     </div>

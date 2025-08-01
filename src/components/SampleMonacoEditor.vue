@@ -389,7 +389,11 @@ function handleUpdateValue(value: string) {
   background-color: #1e1e1e !important;
 }
 
-.monaco-mouse-cursor-text {
-  padding: 8px;
+.cm-editor-wrapper.dark .cm-content {
+  background-color: #1e1e1e !important;
+}
+
+.cm-editor-wrapper.light .cm-content {
+  color: #1e1e1e !important;
 }
 </style>
